@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\UserInfo;
 use App\Cv;
+use App\UserCredentials;
 use XBase\Table;
 use Excel;
 use Input;
@@ -50,43 +51,45 @@ class UserInfoController extends Controller
             //'body' => 'required',
         //]);
         // For DBF
-        // if ($request->hasFile('dbf')) {
-        //     $dbfFile = $request->file('dbf');
-        //     $fileName = $dbfFile->getClientOriginalName();
+        if ($request->hasFile('dbf')) {
+            $dbfFile = $request->file('dbf');
+            $fileName = $dbfFile->getClientOriginalName();
 
-        //     $dbfFile->move('uploads', $fileName);
-        //     $table = new Table(dirname(base_path()).'/CMS/public/uploads/'.$fileName, array('mem_code', 'acc_code','debit', 'credit', 'chk_no', 'doc_date'));
-        //     while ($record = $table->nextRecord()) {
-        //         $newCV = new Cv;
-        //         $newCV->mem_code = $record->getChar("mem_code");
-        //         $newCV->acc_code = $record->getChar("acc_code");
-        //         $newCV->credit = $record->getChar("credit");
-        //         $newCV->debit = $record->getChar("debit");
-        //         $newCV->chk_no = $record->getChar("chk_no");
-        //         $newCV->doc_date = $record->getChar("doc_date");
-        //         $newCV->save();
-        //     }
-        // }
-
-        if ($request->hasFile('csv')) {
-
-            $csvFile = $request->file('csv');
-            $fileName = $csvFile->getClientOriginalName();
-            $csvFile->move('uploads', $fileName);
-
-            $path = base_path().'/public/uploads/'.$fileName;
-
-            Excel::load('/public/uploads/'.$fileName, function ($reader) {
-                foreach ($reader->toArray() as $key => $row) {
-                    
-                    echo $key;
-                    echo $row[0];
-
-                }
-                exit();
-            });
-
+            $dbfFile->move('uploads', $fileName);
+            $table = new Table(dirname(base_path()).'/CMS/public/uploads/'.$fileName, array('mem_code', 'acc_code','debit', 'credit', 'chk_no', 'doc_date'));
+            while ($record = $table->nextRecord()) {
+                $newCV = new Cv;
+                $newCV->mem_code = $record->getChar("mem_code");
+                $newCV->acc_code = $record->getChar("acc_code");
+                $newCV->credit = $record->getChar("credit");
+                $newCV->debit = $record->getChar("debit");
+                $newCV->chk_no = $record->getChar("chk_no");
+                $newCV->doc_date = $record->getChar("doc_date");
+                $newCV->save();
+            }
+            exit();
         }
+
+        //For CSV
+        // if ($request->hasFile('csv')) {
+
+        //     $csvFile = $request->file('csv');
+        //     $fileName = $csvFile->getClientOriginalName();
+        //     $csvFile->move('uploads', $fileName);
+
+        //     $path = base_path().'/public/uploads/'.$fileName;
+
+        //     Excel::load('/public/uploads/'.$fileName, function ($reader) {
+        //         foreach ($reader->toArray() as $key => $row) {
+        //             $newUC = new UserCredentials;
+        //             $newUC->code = $row['code'];
+        //             $newUC->name = $row['name'];
+        //             $newUC->password = $row['password'];
+        //             $newUC->save();
+        //         }
+        //     });
+
+        // }
         return redirect()->route('userInfo.index')
                         ->with('success','User Info created successfully');
     }

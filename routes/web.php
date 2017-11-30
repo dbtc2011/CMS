@@ -10,7 +10,7 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
-
+	
 Route::resource('userInfo','UserInfoController');
 
 Route::get('/', function () {
@@ -18,3 +18,9 @@ Route::get('/', function () {
 });
 
 Route::post('fileUpload', ['as'=>'fileUpload','uses'=>'UserInfoController@store']);
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
+
+Route::resource('userCredentials','UserCredentialsController');
